@@ -1,3 +1,4 @@
+from typing import List
 import pandas as pd
 from pandas.core.frame import DataFrame
 from datetime import datetime
@@ -119,3 +120,20 @@ class SynergyLogisticsFilters():
             routes_table=routes_table[routes_table["total_value"] <= max_value]
 
             return routes_table
+
+    def get_unique_values(self, category:str) -> List:
+        """Genera lista con valores unicos de columna de la base de datos.
+
+        Args:
+            category (str): Nombre de la columna.
+
+        Returns:
+            List: Valores unicos en columna de la tabla.
+        """
+        # Si elemento es columna de la tabla, obtiene valores distintos. 
+        if category in self.SYNERGY_DB.columns.values.tolist():
+            unique_column_values = list(self.SYNERGY_DB[category].unique())
+        else:
+            print("La categoría indicada no existe dentro de la Base de Datos")
+            unique_column_values = []
+        return unique_column_values
