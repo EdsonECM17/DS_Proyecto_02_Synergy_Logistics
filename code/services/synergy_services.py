@@ -6,15 +6,20 @@ class Service(SynergyLogisticsFilters):
     """
     Clase que contine servicios para el analisis de la tabla de Synergy Logistics.
     """
-    def get_routes_list(self) -> List:
+    def get_routes_list(self,  direction:str or None = None) -> List:
         """Genera una lista con todas las rutas diferentes de la tabla.
+        
+        Args:
+            direction (str or None, optional): Dirección de transacción. Defaults to None.
 
         Returns:
             List: Lista con rutas con formato origen-destino.
         """
         routes_list = []
+        # Filter tables by direction
+        filtered_table = self.filter_routes_df(direction=direction)
         # Check row by row table
-        for index, row in self.SYNERGY_DB.iterrows():
+        for index, row in filtered_table.iterrows():
             # route=origin-destination
             route = (row['origin']+ "-" + row['destination'])
             if not route in routes_list:
@@ -60,7 +65,7 @@ class Service(SynergyLogisticsFilters):
         route_value = filtered_table["total_value"].sum()
         return route_value
 
-    def get_top_ten(self, all_cases: dict) -> List:
+    def get_top_ten(self, all_cases: dict) -> dict:
         """De un diccionario de elementos se obtienen los 10 casos con mejores resultados.
 
         Args:
@@ -70,4 +75,8 @@ class Service(SynergyLogisticsFilters):
             List: Lista con los 10 casos con mejores resultados.  
         """
         top_ten_cases = sorted(all_cases, key=all_cases.get, reverse=True)[:10]
-        return top_ten_cases
+        top_ten_dict = {}
+        for case in top_ten_cases:
+            top_ten_dict[case] = all_cases[case]
+
+        return top_ten_dict
