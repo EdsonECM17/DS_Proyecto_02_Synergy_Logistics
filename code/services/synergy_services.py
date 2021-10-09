@@ -25,6 +25,24 @@ class Service(SynergyLogisticsFilters):
             if not route in routes_list:
                 routes_list.append(route)
         return routes_list
+    
+    def get_total_elements(self, direction:str or None = None, year:int or None = None) -> int:
+        """ 
+        Cuenta el número de transacciones en una tabla filtrada. La tabla puede filtrarse por
+        dirección o por año.
+
+        Args:
+            direction (str or None, optional): Dirección de transacción. Defaults to None.
+            year (int or None, optional): Año de transacciones. Defaults to None.
+
+        Returns:
+            int: Total de casos en tabla filtrada. 
+        """
+        # Tabla filtrada
+        filtered_table = self.filter_routes_df(direction=direction, start_year=year, end_year=year)
+        # Contar filas en la tabla
+        elements_count= len(filtered_table)
+        return elements_count
 
     def get_route_frecuency(self, route:str, direction:str or None = None, year:int or None = None)-> int:
         """
@@ -45,7 +63,24 @@ class Service(SynergyLogisticsFilters):
         filtered_table = self.filter_routes_df(origin=origin, destination=destination, direction=direction, start_year=year, end_year=year)
         # Contar filas en la tabla
         route_frecuency = len(filtered_table)
-        return route_frecuency
+        return 
+        
+    def get_total_value(self, direction:str or None = None, year:int or None = None) -> int:
+        """
+        Suma el valor total dentro de una tabla filtrada.
+        Se pueden filtrar resultados por dirección o año.
+
+        Args:
+            route (str): Rutas con formato origen-destino.
+            direction (str or None, optional): Dirección de transacción. Defaults to None.
+            year (int or None, optional): Año de transacciones. Defaults to None.
+
+        Returns:
+            int: suma de valor de elementos en tabla filtrada
+        """
+        filtered_table = self.filter_routes_df(direction=direction, start_year=year, end_year=year)
+        total_value = filtered_table["total_value"].sum()
+        return total_value
 
     def get_route_value(self, route:str, direction:str or None = None, year:int or None = None) -> int:
         """
