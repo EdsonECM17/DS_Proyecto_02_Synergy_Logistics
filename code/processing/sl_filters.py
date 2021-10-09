@@ -13,8 +13,6 @@ class SynergyLogisticsFilters():
         self.SYNERGY_DB = pd.read_csv(DATA_FILE_PATH, index_col="register_id")
         # Convert date column to datetime objects
         self.SYNERGY_DB["date"] = pd.to_datetime(self.SYNERGY_DB["date"])
-        # Get route column for simplify fitering ("origin-destination")
-        self.SYNERGY_DB["route"] = self.SYNERGY_DB["origin"] + "-" + self.SYNERGY_DB["destination"]
 
     def filter_routes_df(self, direction: str or None = None,
                          origin: str or None = None, destination: str or None = None,
@@ -22,7 +20,7 @@ class SynergyLogisticsFilters():
                          start_date: str or None = None, end_date: str or None = None,
                          product: str or None = None, transport_mode: str or None = None,
                          company_name: str or None = None, min_value: int or None = None,
-                         max_value: int or None = None, route: str or None = None) -> DataFrame:
+                         max_value: int or None = None) -> DataFrame:
         """
         Filtra el dataframe de Synergy Logistics de acuerdo a valores en las columnas que tiene
         la tabla generada. Si no hay filtro, se regresa un dataframe completo.
@@ -40,7 +38,6 @@ class SynergyLogisticsFilters():
             company_name (str or None, optional): Nombre de compañia. Defaults to None.
             min_value (int or None, optional): Valor minimo. Defaults to None.
             max_value (int or None, optional): Valor maximo. Defaults to None.
-            route (str or None, optional): Ruta de transporte ("origin-destination"). Defaults to None.
 
         Returns:
             DataFrame:  Dataframe con columnas de la tabla que cumplen con los filtros indicados.
@@ -54,7 +51,6 @@ class SynergyLogisticsFilters():
         product_types = list(routes_table["product"].unique())
         transport_modes = list(routes_table["transport_mode"].unique())
         companies = list(routes_table["company_name"].unique())
-        routes = list(routes_table["route"].unique())
         date_format = '%d/%m/%Y'
         # Add filter to column if valid input is given
         # Dirección
@@ -122,12 +118,6 @@ class SynergyLogisticsFilters():
             routes_table=routes_table[routes_table["total_value"] >= min_value]
         if max_value is not None:
             routes_table=routes_table[routes_table["total_value"] <= max_value]
-        # Rutas de transporte
-        if route is not None:
-            if route in routes:
-                routes_table=routes_table[routes_table["route"] == route]
-            else:
-                print(f"El valor '{route}' no es un filtro valido para la columna route.")
 
         return routes_table
         
