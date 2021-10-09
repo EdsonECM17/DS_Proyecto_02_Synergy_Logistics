@@ -20,7 +20,21 @@ all_routes = service.get_routes_list()
 print(f"Hay {len(all_routes)} rutas diferentes.")
 # Analizar para cada dirección, cada periodo, y cada ruta
 for direction in DIRECCIONES:
+    # Init main summaries (year, pct of transacction, pct of value)
+    year_list = []
+    value_pct_list = []
+    frecuency_pct_list = []
+    # Manejo de casos none (volver str)
+    if direction is None:
+        direction_str = "All"
+    else:
+        direction_str = direction
+    
+    # Ruta para almacenar resultados
+    output_folder = f"{OUTPUT_INITIAL_PATH}/opcion1/{direction_str}"
+    
     for year in PERIODO_TIEMPO:
+        # Init dict to store results
         route_frecuency = {}
         route_value = {}
         route_frecuency_pct = {}
@@ -41,11 +55,7 @@ for direction in DIRECCIONES:
         top_ten_value = service.get_top_ten(route_value)
         top_ten_frecuency_pct = service.get_top_ten(route_frecuency_pct)
         top_ten_value_pct = service.get_top_ten(route_value_pct)
-        # Manejo de casos none (volver str)
-        if direction is None:
-            direction_str = "All"
-        else:
-            direction_str = direction            
+        # Manejo de casos none (volver str)           
         if year is None:
             year_str = "All"
         else:
@@ -64,23 +74,23 @@ for direction in DIRECCIONES:
             i+=1
         print("")
          # Definir folder para almacenar resultados y crear si no existe
-        output_folder = f"{OUTPUT_INITIAL_PATH}/opcion1/{direction_str}/{year_str}"
-        if not os.path.exists(f"{output_folder}"):
-            os.makedirs(f"{output_folder}")
+        output_folder_year = f"{output_folder}/{year_str}"
+        if not os.path.exists(f"{output_folder_year}"):
+            os.makedirs(f"{output_folder_year}")
         # Almacenar resultados como CSV
         # Todas las rutas
         data = {'route': list(route_frecuency.keys()), 'frecuency':list(route_frecuency.values()),
                 'frecuency_pct':list(route_frecuency_pct.values()), 'total_value':list(route_value.values()),
                 'total_value_pct':list(route_value_pct.values())}
-        pd.DataFrame(data).to_csv(output_folder+"/results.csv", index=False)
+        pd.DataFrame(data).to_csv(output_folder_year+"/results.csv", index=False)
         # Top 10 en frecuency
         data = {'route': list(top_ten_frecuency.keys()), 'frecuency':list(top_ten_frecuency.values()), 'frecuency_pct':list(top_ten_frecuency_pct.values())}
-        pd.DataFrame(data).to_csv(output_folder+"/top10_frec.csv", index=False)
+        pd.DataFrame(data).to_csv(output_folder_year+"/top10_frec.csv", index=False)
         # Top 10 en valor
         data = {'route': list(top_ten_value.keys()), 'total_value':list(top_ten_value.values()), 'total_value_pct':list(top_ten_value_pct.values())}
-        pd.DataFrame(data).to_csv(output_folder+"/top10_value.csv", index=False)
+        pd.DataFrame(data).to_csv(output_folder_year+"/top10_value.csv", index=False)
         # Graficar resultados
-        plot = Summary_Chart(output_folder)
+        plot = Summary_Chart(output_folder_year)
         plot.h_bar_summary(top_ten_frecuency, f"Rutas con mayor demanda", "No. de Apariciones",
                            "Rutas", "ruta_frec")
         plot.h_bar_summary(top_ten_value, f"Rutas con mayor valor", "Valor total", "Rutas",
@@ -89,6 +99,13 @@ for direction in DIRECCIONES:
                            "Rutas", "ruta_frec_pct", "purple")
         plot.h_bar_summary(top_ten_value_pct, f"Rutas con mayor valor", "Valor total (%)", "Rutas",
                            "ruta_valor_pct", "purple")
+        # Resumen del periodo
+        year_list.append(year_str)
+        value_pct_list.append(sum(top_ten_value_pct.values()))
+        frecuency_pct_list.append(sum(top_ten_frecuency_pct.values()))
+    # Resumen multianual
+    data = {'year': year_list, 'frecunecy_pct':frecuency_pct_list, 'total_value_pct':value_pct_list}
+    pd.DataFrame(data).to_csv(output_folder+"/summary.csv", index=False)
 
 # Opcion 2: Medios de transporte mas importantes
 
