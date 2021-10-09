@@ -98,7 +98,7 @@ class Summary_Chart(Chart):
         self.save_plot(fig, file_name)
 
     def h_bar_summary(self, data: dict, plot_title: str, x_axis_name: str, y_axis_name: str,
-                               file_name: str, color:str = "blue") -> None:
+                      file_name: str, color:str = "blue") -> None:
         """Gráfica de barras a partir de un diccionario.
 
         Args:
