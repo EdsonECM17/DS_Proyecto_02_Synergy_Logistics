@@ -74,12 +74,12 @@ class SynergyLogisticsFilters():
         # Year
         if start_year is not None:
             if start_year in years:
-                routes_table=routes_table[routes_table["year"] >= start_date]
+                routes_table=routes_table[routes_table["year"] >= start_year]
             else:
                 print(f"El valor '{start_year}' no es un año valido para la columna year.")
         if end_year is not None:
             if end_year in years:
-                routes_table=routes_table[routes_table["year"] <= end_date]
+                routes_table=routes_table[routes_table["year"] <= end_year]
             else:
                 print(f"El valor '{end_year}' no es un año valido para la columna year.")
         # Date
