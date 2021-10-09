@@ -122,3 +122,43 @@ class Service(SynergyLogisticsFilters):
             top_ten_dict[case] = all_cases[case]
 
         return top_ten_dict
+
+    def get_transport_frecuency(self, transport:str, direction:str or None = None, year:int or None = None)-> int:
+        """
+        Cuenta las veces que un transporte aparece en una tabla filtrada.
+        Se pueden filtrar resultados por dirección, año y/o medio de transporte.
+
+        Args:
+            transport (str): Tipo de medio de transporte.
+            direction (str or None, optional): Dirección de transacción. Defaults to None.
+            year (int or None, optional): Año de transacciones. Defaults to None.
+
+        Returns:
+            int: Numero de apariciones de transporte en la tabla filtrada.
+        """
+        # Tabla filtrada
+        filtered_table = self.filter_routes_df(transport_mode=transport, direction=direction,
+                                               start_year=year, end_year=year)
+        # Contar filas en la tabla
+        transport_frecuency = len(filtered_table)
+        return transport_frecuency
+        
+
+    def get_transport_value(self, transport:str, direction:str or None = None, year:int or None = None) -> int:
+        """
+        Suma el valor total para un transporte especifico dentro de una tabla filtrada.
+        Se pueden filtrar resultados por dirección, año y/o medio de transporte.
+
+        Args:
+            transport (str): Tipo de medio de transporte.
+            direction (str or None, optional): Dirección de transacción. Defaults to None.
+            year (int or None, optional): Año de transacciones. Defaults to None.
+            transport_mode (str or None, optional): Tipo de medio de transporte. Defaults to None.
+
+        Returns:
+            int: suma de valor de elementos en tabla filtrada.
+        """
+        filtered_table = self.filter_routes_df(transport_mode=transport, direction=direction,
+                                               start_year=year, end_year=year)
+        transport_value = filtered_table["total_value"].sum()
+        return transport_value
