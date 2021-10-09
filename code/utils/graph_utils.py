@@ -1,6 +1,7 @@
 import os 
 
 import plotly.graph_objects as go
+from plotly.missing_ipywidgets import FigureWidget
 
 # Comando necesario para usar librerias de imagenes fijas
 os.environ["PATH"] = os.environ["PATH"] + f";{os.path.abspath('venv/lib/site-packages/kaleido/executable/')}"
@@ -9,14 +10,24 @@ class Chart:
     """
     Funciones generales para la generación de gráficas.
     """
-    def save_as_image(self, fig, file_name: str):
+    def save_as_image(self, fig:FigureWidget, file_name: str):
         """ Esta función guarda una gráfica como imagen.
         Args:
             fig (plotly.graph_objects.Figure): Objeto de la gráfica creada.
             file_name (str): Ruta donde almacenar el archivo.
         """ 
         fig.write_image(file_name, width=1350, height=730)
-
+    
+    def save_plot(self, fig:FigureWidget, file_name:str):
+        # Validar si folder existe, o si es necesario crearlo
+        if not os.path.exists(f"{self.file_path}"):
+            os.makedirs(f"{self.file_path}")
+        # Guardar grafico interactivo como html
+        fig.write_html(f"{self.file_path}/{file_name}.html")
+        # Guardar imagen statica en
+        self.save_as_image(fig, f"{self.file_path}/{file_name}.png")
+        # Indicar a usuario en consola
+        print(f"Resultado gráficado en {self.file_path}/{file_name}.png")
 
 class Summary_Chart(Chart):
     """
@@ -44,7 +55,6 @@ class Summary_Chart(Chart):
             margin=dict(r=20, t=35),
             plot_bgcolor='rgba(0,0,0,0)', width=1080, height=566,
             font=dict(family='Arial, monospace', size=18))
-
 
     def bar_summary(self, data: dict, plot_title: str, x_axis_name: str, y_axis_name: str,
                     file_name: str, color:str = "blue") -> None:
@@ -82,14 +92,50 @@ class Summary_Chart(Chart):
         fig.update_layout(
             title_text=plot_title,
             xaxis_title=x_axis_name,
-            yaxis_title=y_axis_name)
+            yaxis_title=y_axis_name,
+            xaxis_type="linear")
+        # Salvar resultados
+        self.save_plot(fig, file_name)
 
-        # Validar si folder existe, o si es necesario crearlo
-        if not os.path.exists(f"{self.file_path}"):
-            os.makedirs(f"{self.file_path}")
-        # Guardar grafico interactivo como html
-        fig.write_html(f"{self.file_path}/{file_name}.html")
-        # Guardar imagen statica en
-        self.save_as_image(fig, f"{self.file_path}/{file_name}.png")
-        # Indicar a usuario en consola
-        print(f"Resultado gráficado en {self.file_path}/{file_name}.png")
+    def h_bar_summary(self, data: dict, plot_title: str, x_axis_name: str, y_axis_name: str,
+                               file_name: str, color:str = "blue") -> None:
+        """Gráfica de barras a partir de un diccionario.
+
+        Args:
+            data (dict): Datos a graficar.
+            plot_title (str): Titulo de la gráfica.
+            x_axis_name (str): Nombre de eje x.
+            y_axis_name (str): Nombre de eje y.
+            file_name (str): Nombre del archivo.
+            color (str, optional): Color del gráfico. Defaults to "blue".
+        """          
+        # Se da de alta diccionario con colores disponibles
+        color_dict = {"blue": "rgb(15, 78, 171)", "green": "rgb(15, 171, 72)",
+                      "red": "rgb(232, 4, 0)", "purple": "rgb(109, 15, 171)",
+                      "yellow": "rgb(199, 199, 18)", "orange": "rgb(232, 155, 0)"}
+        # Seleccionar color del gráfico
+        plot_color = color_dict[color] 
+
+        # Separar diccionarios en dos listas, una para cada eje
+        y_data = list(data.keys())
+        y_data.reverse()
+        x_data = list(data.values())
+        x_data.reverse()
+
+        # Generar objeto de gráfica
+        plot_bar = go.Bar(x=x_data, y=y_data, orientation="h")
+        mydata = [plot_bar]
+
+        # Formato de la grafica de barras
+        fig = go.Figure(data=mydata, layout=self.layout)
+        
+        # Actualizar color del grafico
+        fig.update_traces(marker_color=plot_color, marker_line_color=plot_color)
+        # Actualizar gráfico con datos de entrada
+        fig.update_layout(
+            title_text=plot_title,
+            xaxis_title=x_axis_name,
+            yaxis_title=y_axis_name,
+            xaxis_type = "linear")
+        # Salvar resultados
+        self.save_plot(fig, file_name)
