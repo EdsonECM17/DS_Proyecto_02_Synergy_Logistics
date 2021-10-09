@@ -63,7 +63,7 @@ class Service(SynergyLogisticsFilters):
         filtered_table = self.filter_routes_df(origin=origin, destination=destination, direction=direction, start_year=year, end_year=year)
         # Contar filas en la tabla
         route_frecuency = len(filtered_table)
-        return 
+        return route_frecuency
         
     def get_total_value(self, direction:str or None = None, year:int or None = None) -> int:
         """
