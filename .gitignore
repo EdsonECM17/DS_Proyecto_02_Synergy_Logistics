@@ -116,3 +116,8 @@ dmypy.json
 # Folder output
 output/
 exploration/
+
+# Documentation
+documentation/html/
+documentation/latex/
+documentation/DSP02_Doxyfile

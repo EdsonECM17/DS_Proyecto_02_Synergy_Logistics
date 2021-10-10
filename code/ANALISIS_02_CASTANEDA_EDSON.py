@@ -1,7 +1,14 @@
+"""
+ANALISIS SYNERGY LOGISTICS
+
+En este script se exploran las 3 propuestas de enfoque de la empresa Synergy Logistics.
+A partir de una revision total y por año se pretende determinar la mejor opción
+que se puede considerar para los proximos años.
+
+"""
 import pandas as pd
 import os
 
-from processing.sl_filters import SynergyLogisticsFilters
 from utils.graph_utils import Summary_Chart
 from services.synergy_services import Service
 
