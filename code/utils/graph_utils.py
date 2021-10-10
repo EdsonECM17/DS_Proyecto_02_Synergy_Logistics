@@ -92,8 +92,7 @@ class Summary_Chart(Chart):
         fig.update_layout(
             title_text=plot_title,
             xaxis_title=x_axis_name,
-            yaxis_title=y_axis_name,
-            xaxis_type="linear")
+            yaxis_title=y_axis_name)
         # Salvar resultados
         self.save_plot(fig, file_name)
 
@@ -138,4 +137,28 @@ class Summary_Chart(Chart):
             yaxis_title=y_axis_name,
             xaxis_type = "linear")
         # Salvar resultados
+        self.save_plot(fig, file_name)
+
+    def pie_summary(self, data: dict, plot_title: str, file_name: str):
+        # Separar diccionarios en dos listas, una para cada eje
+        x_data = list(data.keys())
+        y_data = list(data.values())
+        # Definir colores
+        colors =  ['rgb(68,138,216)', 'rgb(184,204,208)', 'rgb(161,0,0)', 'rgb(169,161,82)']
+        # Generar objeto de gráfica
+        layout = go.Layout(
+            title=dict(y=0.96, x=0.5, xanchor='center', yanchor='top',
+                       font=dict(size=30)),
+            margin=dict(t=80),
+            plot_bgcolor='rgba(0,0,0,0)', width=1080, height=566,
+            font=dict(family='Arial, monospace', size=18),
+            legend = dict(font = dict(size=30)))
+        plot_bar = go.Pie(labels=x_data, values=y_data, marker_colors=colors)
+        mydata = [plot_bar]
+        # Formato de la grafica de barras
+        fig = go.Figure(data=mydata, layout=layout)
+        fig.update_traces(hoverinfo='label+percent', textfont_size=30)
+        fig.update_layout(
+            title_text=plot_title,
+            uniformtext_minsize=30, uniformtext_mode='hide')
         self.save_plot(fig, file_name)
