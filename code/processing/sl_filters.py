@@ -1,3 +1,4 @@
+from typing import List
 import pandas as pd
 from pandas.core.frame import DataFrame
 from datetime import datetime
@@ -14,12 +15,12 @@ class SynergyLogisticsFilters():
         self.SYNERGY_DB["date"] = pd.to_datetime(self.SYNERGY_DB["date"])
 
     def filter_routes_df(self, direction: str or None = None,
-                           origin: str or None = None, destination: str or None = None,
-                           start_year: int or None = None, end_year: int or None = None,
-                           start_date: str or None = None, end_date: str or None = None,
-                           product: str or None = None, transport_mode: str or None = None,
-                           company_name: str or None = None, min_value: int or None = None,
-                           max_value: int or None = None) -> DataFrame:
+                         origin: str or None = None, destination: str or None = None,
+                         start_year: int or None = None, end_year: int or None = None,
+                         start_date: str or None = None, end_date: str or None = None,
+                         product: str or None = None, transport_mode: str or None = None,
+                         company_name: str or None = None, min_value: int or None = None,
+                         max_value: int or None = None) -> DataFrame:
         """
         Filtra el dataframe de Synergy Logistics de acuerdo a valores en las columnas que tiene
         la tabla generada. Si no hay filtro, se regresa un dataframe completo.
@@ -73,12 +74,12 @@ class SynergyLogisticsFilters():
         # Year
         if start_year is not None:
             if start_year in years:
-                routes_table=routes_table[routes_table["year"] >= start_date]
+                routes_table=routes_table[routes_table["year"] >= start_year]
             else:
                 print(f"El valor '{start_year}' no es un año valido para la columna year.")
         if end_year is not None:
             if end_year in years:
-                routes_table=routes_table[routes_table["year"] <= end_date]
+                routes_table=routes_table[routes_table["year"] <= end_year]
             else:
                 print(f"El valor '{end_year}' no es un año valido para la columna year.")
         # Date
@@ -118,4 +119,22 @@ class SynergyLogisticsFilters():
         if max_value is not None:
             routes_table=routes_table[routes_table["total_value"] <= max_value]
 
-            return routes_table
+        return routes_table
+        
+
+    def get_unique_values(self, category:str) -> List:
+        """Genera lista con valores unicos de columna de la base de datos.
+
+        Args:
+            category (str): Nombre de la columna.
+
+        Returns:
+            List: Valores unicos en columna de la tabla.
+        """
+        # Si elemento es columna de la tabla, obtiene valores distintos. 
+        if category in self.SYNERGY_DB.columns.values.tolist():
+            unique_column_values = list(self.SYNERGY_DB[category].unique())
+        else:
+            print("La categoría indicada no existe dentro de la Base de Datos")
+            unique_column_values = []
+        return unique_column_values
