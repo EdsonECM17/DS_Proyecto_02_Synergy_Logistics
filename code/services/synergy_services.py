@@ -46,7 +46,7 @@ class Service(SynergyLogisticsFilters):
         elements_count= len(filtered_table)
         return elements_count
 
-    def get_route_frecuency(self, route:str, direction:str or None = None, year:int or None = None, transport_mode: str or None = None)-> int:
+    def get_route_frecuency(self, route:str, direction:str or None = None, year:int or None = None)-> int:
         """
         Cuenta las veces que una ruta aparece en una tabla filtrada.
         Se pueden filtrar resultados por dirección, año y/o medio de transporte.
@@ -55,7 +55,6 @@ class Service(SynergyLogisticsFilters):
             route (str): Rutas con formato origen-destino.
             direction (str or None, optional): Dirección de transacción. Defaults to None.
             year (int or None, optional): Año de transacciones. Defaults to None.
-            transport_mode (str or None, optional): Tipo de medio de transporte. Defaults to None.
 
         Returns:
             int: Numero de apariciones de ruta en la tabla filtrada.
@@ -64,7 +63,7 @@ class Service(SynergyLogisticsFilters):
         origin, destination = route.split("-")
         # Tabla filtrada
         filtered_table = self.filter_routes_df(origin=origin, destination=destination, direction=direction,
-                                               start_year=year, end_year=year, transport_mode=transport_mode)
+                                               start_year=year, end_year=year)
         # Contar filas en la tabla
         route_frecuency = len(filtered_table)
         return route_frecuency
@@ -87,7 +86,7 @@ class Service(SynergyLogisticsFilters):
         total_value = filtered_table["total_value"].sum()
         return total_value
 
-    def get_route_value(self, route:str, direction:str or None = None, year:int or None = None, transport_mode: str or None = None) -> int:
+    def get_route_value(self, route:str, direction:str or None = None, year:int or None = None) -> int:
         """
         Suma el valor total para una ruta especifica dentro de una tabla filtrada.
         Se pueden filtrar resultados por dirección, año y/o medio de transporte.
@@ -103,7 +102,7 @@ class Service(SynergyLogisticsFilters):
         """
         origin, destination = route.split("-")
         filtered_table = self.filter_routes_df(origin=origin, destination=destination, direction=direction,
-                                               start_year=year, end_year=year, transport_mode=transport_mode)
+                                               start_year=year, end_year=year)
         route_value = filtered_table["total_value"].sum()
         return route_value
 
@@ -153,7 +152,6 @@ class Service(SynergyLogisticsFilters):
             transport (str): Tipo de medio de transporte.
             direction (str or None, optional): Dirección de transacción. Defaults to None.
             year (int or None, optional): Año de transacciones. Defaults to None.
-            transport_mode (str or None, optional): Tipo de medio de transporte. Defaults to None.
 
         Returns:
             int: suma de valor de elementos en tabla filtrada.
@@ -162,3 +160,68 @@ class Service(SynergyLogisticsFilters):
                                                start_year=year, end_year=year)
         transport_value = filtered_table["total_value"].sum()
         return transport_value
+
+
+    def get_country_frecuency(self, origin:str or None = None, destination:str or None = None, direction:str or None = None, year:int or None = None)-> int:
+        """
+        Cuenta las veces que un pais aparece en una tabla filtrada.
+        Se pueden filtrar resultados por dirección, año y/o medio de transporte.
+
+        Args:
+            origin (str or None, optional): Pais de origen. Defaults to None.
+            destination (str or None, optional): Pais de destino. Defaults to None.
+            direction (str or None, optional): Dirección de transacción. Defaults to None.
+            year (int or None, optional): Año de transacciones. Defaults to None.
+
+        Returns:
+            int: Numero de apariciones de transporte en la tabla filtrada.
+        """
+        # Tabla filtrada
+        filtered_table = self.filter_routes_df(origin=origin, destination=destination, direction=direction,
+                                               start_year=year, end_year=year)
+        # Contar filas en la tabla
+        transport_frecuency = len(filtered_table)
+        return transport_frecuency
+        
+
+    def get_country_value(self, origin:str or None = None, destination:str or None = None, direction:str or None = None, year:int or None = None) -> int:
+        """
+        Suma el valor total para un pais especifico dentro de una tabla filtrada.
+        Se pueden filtrar resultados por dirección, año y/o medio de transporte.
+
+        Args:
+            origin (str or None, optional): Pais de origen. Defaults to None.
+            destination (str or None, optional): Pais de destino. Defaults to None.
+            direction (str or None, optional): Dirección de transacción. Defaults to None.
+            year (int or None, optional): Año de transacciones. Defaults to None.
+
+        Returns:
+            int: suma de valor de elementos en tabla filtrada.
+        """
+        filtered_table = self.filter_routes_df(origin=origin, destination=destination, direction=direction,
+                                               start_year=year, end_year=year)
+        transport_value = filtered_table["total_value"].sum()
+        return transport_value
+
+    def reorder_dict_max(self, data_dict: dict) -> dict:
+        """
+        Ordena diccionario a partir de valores de mayor a menor.
+        Elimita los elementos del diccionario que tengan un valor de 0.
+
+        Args:
+            data_dict (dict): Diccionario de datos desordenados.
+
+        Returns:
+            dict: Diccionario de datos filtrados.
+        """
+        # Crear nuevo diccionario para almacenar datos ordenados
+        ordered_data_dict = {}
+        ordered_keys = sorted(data_dict, key=data_dict.get, reverse=True)
+        for key in ordered_keys:
+            # if value is 0, skip
+            if data_dict[key] == 0:
+                continue
+            # if value > 0
+            else:
+                ordered_data_dict[key]=data_dict[key]
+        return ordered_data_dict
